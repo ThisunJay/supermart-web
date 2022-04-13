@@ -1,7 +1,25 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import './BillingReport.css'
+import Spinner from '../components/spinner';
+import { getAllDeliveries } from '../controllers/delivery.controller'
+const dayjs = require('dayjs')
 
 export default function DeliveryReport() {
+
+    const [loading, setLoading] = useState(true);
+    const [tableData, setTableData] = useState([]);
+
+    const fetchData = async () => {
+        let data = await getAllDeliveries();
+        // console.log(data?.data?.deliveries);
+        setTableData(data?.data?.deliveries);
+        setLoading(false);
+    }
+
+    useEffect(() => {
+        fetchData();
+    }, [])
+
   return (
     <div className='container'>
         <div className="card my-4 shadow-sm rounded">
@@ -20,26 +38,26 @@ export default function DeliveryReport() {
                                 <th style={{backgroundColor: 'white'}} scope="col">Delivery Van Number</th>
                                 <th style={{backgroundColor: 'white'}} scope="col">Driver Contact Number</th>
                                 <th style={{backgroundColor: 'white'}} scope="col">Customer Name</th>
+                                <th style={{backgroundColor: 'white'}} scope="col">Customer Contact Number</th>
                                 <th style={{backgroundColor: 'white'}} scope="col">Delivery State</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <th scope="row">1</th>
-                                <td>11</td>
-                                <td>VA-0013</td>
-                                <td>+94 7381 37821</td>
-                                <td>Sachin Rasangika</td>
-                                <td><span className="badge bg-primary">Created</span></td>
-                            </tr>
-                            <tr>
-                                <th scope="row">2</th>
-                                <td>22</td>
-                                <td>PC-9314</td>
-                                <td>+94 0887 38123</td>
-                                <td>Thisun Silva</td>
-                                <td><span className="badge bg-success">Delivered</span></td>
-                            </tr>
+                            {
+                                loading ? spinner() : tableData.map((i, index) => {
+                                    return (
+                                        <tr key={index}>
+                                            <td>{i.billNumber}</td>
+                                            <td>{i.deliveryNumber}</td>
+                                            <td>{i.deliveryVanNumber}</td>
+                                            <td>{i.driverContactNumber}</td>
+                                            <td>{i.customerName}</td>
+                                            <td>{i.customerContactNumber}</td>
+                                            <td>{getState(i.state[i.state.length - 1].state)}</td>
+                                        </tr>
+                                    )
+                                })
+                            }
                         </tbody>
                     </table>
                 </div>
@@ -47,4 +65,29 @@ export default function DeliveryReport() {
             <button className='btn btn-success mt-4'>Export to CSV</button>
     </div>
   )
+}
+
+const getState = (state) => {
+    switch (state) {
+        case "Created":
+            return <span className="badge bg-primary">Created</span>
+        case "Ready":
+            return <span className="badge bg-info">Ready</span>
+        case "On Delivery":
+            return <span className="badge bg-secondary">On Delivery</span>
+        case "Delivered":
+            return <span className="badge bg-success">Delivered</span>
+        case "Cancelled":
+            return <span className="badge bg-danger">Cancelled</span>
+    }
+}
+
+const spinner = () => {
+    return (
+        <tr>
+            <td colSpan={6}>
+                <Spinner></Spinner>
+            </td>
+        </tr>
+    )
 }

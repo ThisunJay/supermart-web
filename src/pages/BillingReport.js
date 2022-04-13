@@ -1,7 +1,25 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import './BillingReport.css'
+import Spinner from '../components/spinner';
+import { getAllBills } from '../controllers/bill.controller'
+const dayjs = require('dayjs')
 
 function BillingReport() {
+
+    const [loading, setLoading] = useState(true);
+    const [tableData, setTableData] = useState([]);
+    
+    const fetchData = async () => {
+        let data = await getAllBills();
+        // console.log(data?.data?.bills);
+        setTableData(data?.data?.bills);
+        setLoading(false);
+    }
+    
+    useEffect(() => {
+        fetchData()
+    }, [])
+
 
     return (
         <>
@@ -19,101 +37,27 @@ function BillingReport() {
                                 <tr>
                                     <th style={{backgroundColor: 'white'}} scope="col">Bill Number</th>
                                     <th style={{backgroundColor: 'white'}} scope="col">Contact Number</th>
-                                    <th style={{backgroundColor: 'white'}} scope="col">Items</th>
+                                    <th style={{backgroundColor: 'white'}} scope="col"># Items</th>
                                     <th style={{backgroundColor: 'white'}} scope="col">Total Amount</th>
                                     <th style={{backgroundColor: 'white'}} scope="col">Date</th>
                                     <th style={{backgroundColor: 'white'}} scope="col">Time</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr>
-                                    <th scope="row">1</th>
-                                    <td>Sprite</td>
-                                    <td>Sprite</td>
-                                    <td>Sprite</td>
-                                    <td>Sprite</td>
-                                    <td>Sprite</td>
-                                </tr>
-                                <tr>
-                                    <th scope="row">1</th>
-                                    <td>Sprite</td>
-                                    <td>Sprite</td>
-                                    <td>Sprite</td>
-                                    <td>Sprite</td>
-                                    <td>Sprite</td>
-                                </tr>
-                                <tr>
-                                    <th scope="row">1</th>
-                                    <td>Sprite</td>
-                                    <td>Sprite</td>
-                                    <td>Sprite</td>
-                                    <td>Sprite</td>
-                                    <td>Sprite</td>
-                                </tr>
-                                <tr>
-                                    <th scope="row">1</th>
-                                    <td>Sprite</td>
-                                    <td>Sprite</td>
-                                    <td>Sprite</td>
-                                    <td>Sprite</td>
-                                    <td>Sprite</td>
-                                </tr>
-                                <tr>
-                                    <th scope="row">1</th>
-                                    <td>Sprite</td>
-                                    <td>Sprite</td>
-                                    <td>Sprite</td>
-                                    <td>Sprite</td>
-                                    <td>Sprite</td>
-                                </tr>
-                                <tr>
-                                    <th scope="row">1</th>
-                                    <td>Sprite</td>
-                                    <td>Sprite</td>
-                                    <td>Sprite</td>
-                                    <td>Sprite</td>
-                                    <td>Sprite</td>
-                                </tr>
-                                <tr>
-                                    <th scope="row">1</th>
-                                    <td>Sprite</td>
-                                    <td>Sprite</td>
-                                    <td>Sprite</td>
-                                    <td>Sprite</td>
-                                    <td>Sprite</td>
-                                </tr>
-                                <tr>
-                                    <th scope="row">1</th>
-                                    <td>Sprite</td>
-                                    <td>Sprite</td>
-                                    <td>Sprite</td>
-                                    <td>Sprite</td>
-                                    <td>Sprite</td>
-                                </tr>
-                                <tr>
-                                    <th scope="row">1</th>
-                                    <td>Sprite</td>
-                                    <td>Sprite</td>
-                                    <td>Sprite</td>
-                                    <td>Sprite</td>
-                                    <td>Sprite</td>
-                                </tr>
-                                <tr>
-                                    <th scope="row">1</th>
-                                    <td>Sprite</td>
-                                    <td>Sprite</td>
-                                    <td>Sprite</td>
-                                    <td>Sprite</td>
-                                    <td>Sprite</td>
-                                </tr>
-                                <tr>
-                                    <th scope="row">1</th>
-                                    <td>Sprite</td>
-                                    <td>Sprite</td>
-                                    <td>Sprite</td>
-                                    <td>Sprite</td>
-                                    <td>Sprite</td>
-                                </tr>
+                                {
+                                    loading ? spinner() : tableData.map((i, index) => {
+                                        return (
+                                            <tr key={index}>
+                                                <th scope="row">{i.id}</th>
+                                                <td>{i.contactNumber}</td>
+                                                <td>{i.billItems.length}</td>
+                                                <td>{i.fullAmount}</td>
+                                                <td>{dayjs(i.date).format("YYYY-MM-DD")}</td>
+                                                <td>{dayjs(i.date).format("h:mm A")}</td>
+                                            </tr>
+                                        )
+                                    })
+                                }
                             </tbody>
                         </table>
                     </div>
@@ -123,6 +67,16 @@ function BillingReport() {
             </div>
         </>
     );
+}
+
+const spinner = () => {
+    return (
+        <tr>
+            <td colSpan={6}>
+                <Spinner></Spinner>
+            </td>
+        </tr>
+    )
 }
 
 export default BillingReport;

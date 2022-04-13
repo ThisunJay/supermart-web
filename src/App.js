@@ -7,10 +7,13 @@ import Billing from './pages/Billing';
 import BillingReport from './pages/BillingReport';
 import Delivery from './pages/Delivery';
 import DeliveryReport from './pages/DeliveryReport';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function App() {
   return (
     <div style={{position: 'relative'}}>
+      <ToastContainer />
       <Router>
         <Navbar />
         <Switch>
