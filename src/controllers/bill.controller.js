@@ -13,3 +13,15 @@ export const getAllBills = async () => {
         }
     })
 }
+
+export const createBill = async (data) => {
+    return new Promise(async (resolve, reject) => {
+        let apiUrl = `${host}/bill/create`;
+        try {
+            let result = await axios.post(apiUrl, data);
+            resolve(result);
+        } catch (error) {
+            reject(error);
+        }
+    })
+}
