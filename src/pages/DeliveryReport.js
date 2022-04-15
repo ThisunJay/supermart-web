@@ -2,17 +2,20 @@ import React, { useEffect, useState } from 'react'
 import './BillingReport.css'
 import Spinner from '../components/spinner';
 import { getAllDeliveries } from '../controllers/delivery.controller'
+import { CSVLink, CSVDownload } from "react-csv";
 const dayjs = require('dayjs')
 
 export default function DeliveryReport() {
 
     const [loading, setLoading] = useState(true);
     const [tableData, setTableData] = useState([]);
+    const [csvData, setCsvData] = useState([]);
 
     const fetchData = async () => {
         let data = await getAllDeliveries();
         // console.log(data?.data?.deliveries);
         setTableData(data?.data?.deliveries);
+        setCsvData(data?.data?.deliveries);
         setLoading(false);
     }
 
@@ -62,7 +65,23 @@ export default function DeliveryReport() {
                     </table>
                 </div>
             </div>
-            <button className='btn btn-success mt-4'>Export to CSV</button>
+            <CSVLink data={csvData} 
+                headers={[
+                    {label: 'Object ID', key: '_id'},
+                    {label: 'Delivery Number', key: 'deliveryNumber'},
+                    {label: 'Bill ID', key: 'billNumber'},
+                    {label: 'Customer Contact Number', key: 'customerContactNumber'},
+                    {label: 'Customer Name', key: 'customerName'},
+                    {label: 'Delivery Charge', key: 'deliveryCharge'},
+                    {label: 'Delivery Van Number', key: 'deliveryVanNumber'},
+                    {label: 'Driver Contact Number', key: 'driverContactNumber'},
+                    {label: 'Date', key: 'date'},
+                    {label: 'Version', key: '__v'}
+                ]}
+                filename={`Delivery Report - ${dayjs().format('YYYY-MM-DD')}`}>
+                    <button className='btn btn-success mt-4'>Export to excel
+                    </button>
+            </CSVLink>
     </div>
   )
 }

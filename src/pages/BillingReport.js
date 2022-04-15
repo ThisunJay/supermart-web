@@ -2,17 +2,22 @@ import React, { useEffect, useState } from 'react';
 import './BillingReport.css'
 import Spinner from '../components/spinner';
 import { getAllBills } from '../controllers/bill.controller'
+import { CSVLink, CSVDownload } from "react-csv";
 const dayjs = require('dayjs')
 
 function BillingReport() {
 
     const [loading, setLoading] = useState(true);
     const [tableData, setTableData] = useState([]);
+    const [csvData, setCsvData] = useState([]);
     
     const fetchData = async () => {
         let data = await getAllBills();
         // console.log(data?.data?.bills);
         setTableData(data?.data?.bills);
+        
+        setCsvData(data?.data?.bills);
+
         setLoading(false);
     }
     
@@ -62,8 +67,22 @@ function BillingReport() {
                         </table>
                     </div>
                 </div>
-
-                <button className='btn btn-success mt-4'>Export to CSV</button>
+                <CSVLink data={csvData} 
+                    headers={[
+                        {label: 'Object ID', key: '_id'},
+                        {label: 'Bill ID', key: 'id'},
+                        {label: 'Contact Number', key: 'contactNumber'},
+                        {label: 'Full Amount', key: 'fullAmount'},
+                        {label: 'Items', key: 'billItems'},
+                        {label: 'Discount Amount', key: 'discountedAmount'},
+                        {label: 'Discount Percentage', key: 'discountPercentage'},
+                        {label: 'Date', key: 'date'},
+                        {label: 'Version', key: '__v'}
+                    ]}
+                    filename={`Billing Report - ${dayjs().format('YYYY-MM-DD')}`}>
+                        <button className='btn btn-success mt-4'>Export to excel
+                        </button>
+                </CSVLink>
             </div>
         </>
     );
